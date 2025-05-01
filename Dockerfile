@@ -24,7 +24,7 @@ FROM php:8.2-cli
 WORKDIR /var/www
 
 # Copy your application code into the container
-COPY composer.json composer.lock artisan .
+COPY composer.json composer.lock artisan ./
 COPY --from=builder /var/www/vendor ./vendor
 COPY app ./app
 COPY bootstrap ./bootstrap
