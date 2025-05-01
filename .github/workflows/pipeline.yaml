@@ -1,0 +1,38 @@
+name: Slack Reminder CI/CD Pipeline
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        id: composer-cache
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run tests
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          SLACK_SECRET: ${{ secrets.SLACK_SECRET }}
+        run: php artisan test --testdox
