@@ -19,12 +19,14 @@ RUN composer install \
 
 FROM php:8.2-cli
 # Main container
-
+RUN groupadd -r php-user && \
+useradd -r -g www-data -u 1000 php-user
+USER php-user
 # Set the working directory in the container
 WORKDIR /var/www
 
 # Copy your application code into the container
-COPY composer.json composer.lock artisan .
+COPY composer.json composer.lock artisan ./
 COPY --from=builder /var/www/vendor ./vendor
 COPY app ./app
 COPY bootstrap ./bootstrap
